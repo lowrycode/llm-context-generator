@@ -1,0 +1,10 @@
+# EXAMPLES TO AMEND
+
+# Ignore all .log files then re-include a specific file
+*.log
+!important.log
+
+# Ignore everything directly inside src directory then re-include contents of src/hooks directory
+src/*
+!src/hooks/
+!src/hooks/*
