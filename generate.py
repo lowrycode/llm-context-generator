@@ -73,11 +73,25 @@ def get_ignore_patterns(root: Path, ignore_files):
 def matches(pattern, name, rel_path):
     pattern = pattern.rstrip("/")
 
-    return (
-        fnmatch.fnmatch(name, pattern)
-        or fnmatch.fnmatch(rel_path, pattern)
-        or rel_path.startswith(pattern + "/")
-    )
+    # Exact file/dir match
+    if fnmatch.fnmatch(name, pattern):
+        return True
+
+    if fnmatch.fnmatch(rel_path, pattern):
+        return True
+
+    # Descendant matching (gitignore-style folder support)
+    if pattern.endswith("/**"):
+        base = pattern[:-3]
+
+        if rel_path == base or rel_path.startswith(base + "/"):
+            return True
+
+    # Allow traversal into parent dirs of explicit includes
+    if pattern.startswith(rel_path + "/"):
+        return True
+
+    return False
 
 
 def is_ignored(path: Path, root: Path, patterns):
